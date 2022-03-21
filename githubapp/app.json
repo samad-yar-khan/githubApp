@@ -11,5 +11,5 @@
     "name": "GithubApp",
     "nameSlug": "githubapp",
     "classFile": "GithubAppApp.ts",
-    "description": "This applicatio will enable RC users to fetch details of a project from github"
+    "description": "This application will enable RC users to fetch details of a project from github"
 }
