@@ -126,7 +126,7 @@ export class GithubAppApp extends App {
                                 const textSender = await modify
                                     .getCreator()
                                     .startMessage()
-                                    .setText(`[ ${login} ](${html_url})`).addAttachment(new ContributorImage(contributor.avatar_url));
+                                    .setText(`[ ${login} ](${html_url})`);
 
                                 if (room) {
                                     textSender.setRoom(room);
