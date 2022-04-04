@@ -1,7 +1,7 @@
 {
     "id": "1da5353c-05f4-4d02-8556-2f134cec7355",
     "version": "0.0.1",
-    "requiredApiVersion": "^1.4.0",
+    "requiredApiVersion": "^1.19.0",
     "iconFile": "icon.png",
     "author": {
         "name": "Samad Yar Khan",
@@ -11,5 +11,6 @@
     "name": "GithubApp",
     "nameSlug": "githubapp",
     "classFile": "GithubAppApp.ts",
-    "description": "This application will enable RC users to fetch details of a project from github"
+    "description": "This application will enable RC users to fetch details of a project from github",
+    "implements": []
 }
