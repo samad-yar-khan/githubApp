@@ -107,7 +107,7 @@ export class GithubAppApp extends App {
                                 await modify.getCreator().finish(textSender);
                             }
                         });
-                    } else if(data.value==='contributors'){
+                    } else if(data.value==='/contributors'){
                         const textSender = await modify
                             .getCreator()
                             .startMessage()
