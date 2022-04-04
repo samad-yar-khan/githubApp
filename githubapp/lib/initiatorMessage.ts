@@ -49,20 +49,20 @@ export async function initiatorMessage({
         elements: [
             block.newButtonElement({
                 actionId: "githubDataSelect",
-                text: block.newPlainTextObject("Programmer"),
-                value: "programmerhumor",
+                text: block.newPlainTextObject("Repo"),
+                value: "",
                 style: ButtonStyle.PRIMARY,
             }),
             block.newButtonElement({
-                actionId: "githubataselect",
-                text: block.newPlainTextObject("Dank"),
-                value: "dankmemes",
+                actionId: "githubDataSelect",
+                text: block.newPlainTextObject("Issues"),
+                value: "/issues",
                 style: ButtonStyle.PRIMARY,
             }),
             block.newButtonElement({
-                actionId: "githubdataselect",
-                text: block.newPlainTextObject("Wholesome"),
-                value: "wholesomememes",
+                actionId: "githubDataSelect",
+                text: block.newPlainTextObject("Contributors"),
+                value: "/contributors",
                 style: ButtonStyle.PRIMARY,
             }),
         ],
