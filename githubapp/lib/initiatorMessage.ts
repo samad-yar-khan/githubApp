@@ -44,31 +44,33 @@ export async function initiatorMessage({
         text: block.newPlainTextObject("What do you want to me fetch 👇 "),
     });
 
+    
+
     block.addActionsBlock({
         blockId: "githubdata",
         elements: [
             block.newButtonElement({
                 actionId: "githubDataSelect",
                 text: block.newPlainTextObject("Repo"),
-                value: "",
+                value: `${data.arguments[0]}`,
                 style: ButtonStyle.PRIMARY,
             }),
             block.newButtonElement({
                 actionId: "githubDataSelect",
                 text: block.newPlainTextObject("Issues"),
-                value: "/issues",
+                value: `${data.arguments[0]}/issues`,
                 style: ButtonStyle.DANGER,
             }),
             block.newButtonElement({
                 actionId: "githubDataSelect",
                 text: block.newPlainTextObject("Contributors"),
-                value: "/contributors",
+                value: `${data.arguments[0]}/contributors`,
                 style: ButtonStyle.PRIMARY,
             }),
             block.newButtonElement({
                 actionId: "githubDataSelect",
                 text: block.newPlainTextObject("Pull Requests"),
-                value: "/pulls",
+                value: `${data.arguments[0]}/pulls`,
                 style: ButtonStyle.PRIMARY,
             }),
         ],

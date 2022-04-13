@@ -43,43 +43,58 @@ export class GithubAppApp extends App {
         const data = context.getInteractionData();
 
         const { actionId } = data;
-
+        console.log(data);
         switch (actionId) {
             case "githubDataSelect": {
                 try {
                     const gitResponse = await http.get(
-                        `https://api.github.com/repos/RocketChat/Rocket.Chat${data.value}`
+                        `https://api.github.com/repos/${data.value}`
                     );
+
+                    const param = data.value;
+                    let paramVal = "";
+                    if(param && param.length){
+                        
+                        for(let i = param.length-1; i>=0 && data.value && data.value[i]!='/' ;i--){
+                            paramVal = data.value[i] + paramVal;
+                        }
+                    }
 
                     const resData = gitResponse.data;
 
                     const { room } = context.getInteractionData();
 
-                    if (data.value === "") {
-                        const fullName =
-                            "[" +
-                            resData.full_name +
-                            "](" +
-                            resData.html_url +
-                            ")" +
-                            " | ";
-                        const stars =
-                            "stars: " + resData.stargazers_count + " | ";
-                        const issues =
-                            "open issues: " + resData.open_issues + " | ";
-                        const forks = "forks: " + resData.forks_count + " | ";
+                    if (paramVal === "pulls") {
 
                         const textSender = await modify
-                            .getCreator()
-                            .startMessage()
-                            .setText(fullName + stars + issues + forks);
+                        .getCreator()
+                        .startMessage()
+                        .setText(`*PULL REQUESTS*`);
 
-                        if (room) {
-                            textSender.setRoom(room);
+                    if (room) {
+                        textSender.setRoom(room);
+                    }
+
+                    await modify.getCreator().finish(textSender);
+                    resData.forEach(async (pull, ind) => {
+                        if (ind < 10) {
+                            const title = pull.title;
+                            const url = pull.html_url;
+
+                            const textSender = await modify
+                                .getCreator()
+                                .startMessage()
+                                .setText(`[ #${pull.number} ](${url})  ${pull.title}`);
+
+                            if (room) {
+                                textSender.setRoom(room);
+                            }
+
+                            await modify.getCreator().finish(textSender);
                         }
-
-                        await modify.getCreator().finish(textSender);
-                    } else if (data.value === "/issues") {
+                    });
+                        
+                    } else if (paramVal === "issues") {
                         const textSender = await modify
                             .getCreator()
                             .startMessage()
@@ -107,7 +122,7 @@ export class GithubAppApp extends App {
                                 await modify.getCreator().finish(textSender);
                             }
                         });
-                    } else if(data.value==='/contributors'){
+                    } else if(paramVal==='contributors'){
                         const textSender = await modify
                             .getCreator()
                             .startMessage()
@@ -137,33 +152,30 @@ export class GithubAppApp extends App {
                         });
                     }else{
 
-                      const textSender = await modify
+           
+                        const fullName =
+                            "[" +
+                            resData.full_name +
+                            "](" +
+                            resData.html_url +
+                            ")" +
+                            " | ";
+                        const stars =
+                            "stars: " + resData.stargazers_count + " | ";
+                        const issues =
+                            "open issues: " + resData.open_issues + " | ";
+                        const forks = "forks: " + resData.forks_count + " | ";
+
+                        const textSender = await modify
                             .getCreator()
                             .startMessage()
-                            .setText(`*PULL REQUESTS*`);
+                            .setText(fullName + stars + issues + forks);
 
                         if (room) {
                             textSender.setRoom(room);
                         }
 
                         await modify.getCreator().finish(textSender);
-                        resData.forEach(async (pull, ind) => {
-                            if (ind < 10) {
-                                const title = pull.title;
-                                const url = pull.html_url;
-
-                                const textSender = await modify
-                                    .getCreator()
-                                    .startMessage()
-                                    .setText(`[ #${pull.number} ](${url})  ${pull.title}`);
-
-                                if (room) {
-                                    textSender.setRoom(room);
-                                }
-
-                                await modify.getCreator().finish(textSender);
-                            }
-                        });
 
                     }
 

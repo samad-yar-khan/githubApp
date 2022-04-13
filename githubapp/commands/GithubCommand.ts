@@ -36,6 +36,8 @@ export class GithubCommand implements ISlashCommand {
         // }
         // const messageBuilder: IMessageBuilder = creator.startMessage(messageTemplate)
         // await creator.finish(messageBuilder)
+        const command = context.getArguments();
+        console.log(command);
 
         const sender = context.getSender(); // the user calling the slashcommand
         const room = context.getRoom(); // the current room
@@ -43,8 +45,14 @@ export class GithubCommand implements ISlashCommand {
         const data = {
             room: room,
             sender: sender,
+            arguments: command
         };
 
-        await initiatorMessage({ data, read, persistence, modify, http });
+        if(Array.isArray(command) && command.length == 1 ){
+            await initiatorMessage({ data, read, persistence, modify, http });
+        }else if(Array.isArray(command) && command.length > 1){
+
+        }
+       
     }
 }
