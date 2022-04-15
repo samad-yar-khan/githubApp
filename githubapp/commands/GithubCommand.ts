@@ -48,10 +48,59 @@ export class GithubCommand implements ISlashCommand {
             arguments: command
         };
 
-        if(Array.isArray(command) && command.length == 1 ){
+        if(Array.isArray(command) && command.length === 1 ){
             await initiatorMessage({ data, read, persistence, modify, http });
-        }else if(Array.isArray(command) && command.length > 1){
+        }else if(Array.isArray(command) && command.length === 2){   
+            const repository = command[0];
+            const resource = command[1];
+            switch(resource){
+                case 'issues':{
+                    const gitResponse = await http.get(
+                        `https://api.github.com/repos/${repository}/issues`
+                    );
+                    const resData = gitResponse.data;
+                    const room: IRoom = context.getRoom()
+                    const textSender = await modify
+                            .getCreator()
+                            .startMessage()
+                            .setText(`*ISSUES LIST*`);
 
+                        if (room) {
+                            textSender.setRoom(room);
+                        }
+                        let ind =0;
+                        await modify.getCreator().finish(textSender);
+                        resData.forEach(async (issue) => {
+                            if (typeof issue.pull_request === "undefined" && ind < 10) {
+                                const title = issue.title;
+                                const url = issue.html_url;
+
+                                const textSender = await modify
+                                    .getCreator()
+                                    .startMessage()
+                                    .setText(`[ #${issue.number} ](${url})  *${issue.title}*`);
+
+                                if (room) {
+                                    textSender.setRoom(room);
+                                }
+
+                                await modify.getCreator().finish(textSender);
+                                ind++;
+                            }
+                        });
+                    break;
+                }
+                case 'pulls': 
+                    console.log('Calling!');
+                    break;
+                
+                case 'contributors': 
+                    console.log('Calling!');
+                    break;
+
+                default : // [7]
+                    throw new Error('Error!');
+                }
         }
        
     }

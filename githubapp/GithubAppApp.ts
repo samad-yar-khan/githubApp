@@ -84,7 +84,7 @@ export class GithubAppApp extends App {
                             const textSender = await modify
                                 .getCreator()
                                 .startMessage()
-                                .setText(`[ #${pull.number} ](${url})  ${pull.title}`);
+                                .setText(`[ #${pull.number} ](${url})  *${pull.title}*`);
 
                             if (room) {
                                 textSender.setRoom(room);
@@ -103,23 +103,24 @@ export class GithubAppApp extends App {
                         if (room) {
                             textSender.setRoom(room);
                         }
-
+                        let ind =0;
                         await modify.getCreator().finish(textSender);
-                        resData.forEach(async (issue, ind) => {
-                            if (ind < 10) {
+                        resData.forEach(async (issue) => {
+                            if (typeof issue.pull_request === "undefined" && ind < 10) {
                                 const title = issue.title;
                                 const url = issue.html_url;
 
                                 const textSender = await modify
                                     .getCreator()
                                     .startMessage()
-                                    .setText(`[ #${issue.number} ](${url})  ${issue.title}`);
+                                    .setText(`[ #${issue.number} ](${url})  *${issue.title}*`);
 
                                 if (room) {
                                     textSender.setRoom(room);
                                 }
 
                                 await modify.getCreator().finish(textSender);
+                                ind++;
                             }
                         });
                     } else if(paramVal==='contributors'){
@@ -159,12 +160,12 @@ export class GithubAppApp extends App {
                             "](" +
                             resData.html_url +
                             ")" +
-                            " | ";
+                            " ▫️ ";
                         const stars =
-                            "stars: " + resData.stargazers_count + " | ";
+                            "⭐ Stars " + resData.stargazers_count + "  ";
                         const issues =
-                            "open issues: " + resData.open_issues + " | ";
-                        const forks = "forks: " + resData.forks_count + " | ";
+                            "❗ Issues " + resData.open_issues + "  ";
+                        const forks = "🍴 Forks " + resData.forks_count + "  ";
 
                         const textSender = await modify
                             .getCreator()
