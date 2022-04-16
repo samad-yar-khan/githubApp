@@ -41,17 +41,15 @@ export async function initiatorMessage({
     const block = modify.getCreator().getBlockBuilder();
 
     block.addSectionBlock({
-        text: block.newPlainTextObject("What do you want to me fetch 👇 "),
+        text: block.newPlainTextObject(`Choose Action for ${data.arguments[0]} 👇 ?`),
     });
-
-    
 
     block.addActionsBlock({
         blockId: "githubdata",
         elements: [
             block.newButtonElement({
                 actionId: "githubDataSelect",
-                text: block.newPlainTextObject("Repo"),
+                text: block.newPlainTextObject("Overview"),
                 value: `${data.arguments[0]}`,
                 style: ButtonStyle.PRIMARY,
             }),

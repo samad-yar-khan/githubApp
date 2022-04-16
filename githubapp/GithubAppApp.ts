@@ -152,8 +152,7 @@ export class GithubAppApp extends App {
                             }
                         });
                     }else{
-
-           
+                        
                         const fullName =
                             "[" +
                             resData.full_name +
@@ -162,23 +161,30 @@ export class GithubAppApp extends App {
                             ")" +
                             " ▫️ ";
                         const stars =
-                            "⭐ Stars " + resData.stargazers_count + "  ";
+                            "` ⭐ Stars " + resData.stargazers_count + " ` ";
                         const issues =
-                            "❗ Issues " + resData.open_issues + "  ";
-                        const forks = "🍴 Forks " + resData.forks_count + "  ";
+                            "` ❗ Issues " + resData.open_issues + " ` ";
+                        const forks = "` 🍴 Forks " + resData.forks_count + " ` ";
+                        let tags = "";
+                        if(resData && resData.topics && Array.isArray(resData.topics)){
+                            resData.topics.forEach((topic : string) =>  {
+                                let tempTopic = " ` ";
+                                tempTopic+=topic;
+                                tempTopic+= " ` ";
+                                tags+= tempTopic;
+                            })
+                        }
 
                         const textSender = await modify
                             .getCreator()
                             .startMessage()
-                            .setText(fullName + stars + issues + forks);
-
+                            .setText(fullName + stars + issues + forks  + "```" + resData.description+ "```" + tags);
                         if (room) {
                             textSender.setRoom(room);
                         }
+                            await modify.getCreator().finish(textSender);
 
-                        await modify.getCreator().finish(textSender);
-
-                    }
+                        }
 
                     return {
                         success: true,
