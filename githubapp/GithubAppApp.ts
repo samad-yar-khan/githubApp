@@ -10,6 +10,8 @@ import {
 import { App } from "@rocket.chat/apps-engine/definition/App";
 import { IAppInfo } from "@rocket.chat/apps-engine/definition/metadata";
 import { GithubCommand } from "./commands/GithubCommand";
+import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import { WebhookEndpoint } from "./endpoints/WebhookEndpoints";
 
 import {
     IMessage,
@@ -206,6 +208,13 @@ export class GithubAppApp extends App {
     public async extendConfiguration(
         configuration: IConfigurationExtend
     ): Promise<void> {
+
+        configuration.api.provideApi({
+            visibility: ApiVisibility.PUBLIC,
+            security: ApiSecurity.UNSECURE,
+            endpoints: [new WebhookEndpoint(this)],
+        });
+
         const gitHubCommand: GithubCommand = new GithubCommand();
         await configuration.slashCommands.provideSlashCommand(gitHubCommand);
     }
