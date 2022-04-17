@@ -22,6 +22,7 @@ import { sendNotification } from "../lib/helpers/sendNotification";
 import { getWebhookUrl } from "../lib/helpers/getWebhookUrl";
 
 export class GithubCommand implements ISlashCommand {
+    public constructor(private readonly app: GithubAppApp) {}
     public command = "github";
     public i18nDescription = "fetching githup data";
     public providesPreview = false;
@@ -277,7 +278,7 @@ export class GithubCommand implements ISlashCommand {
             }
             await modify.getCreator().finish(textSender);
     }
-    public constructor(private readonly app: GithubAppApp) {}
+
     private async subscribeRepo(context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<void> {
         const [, repoName] = context.getArguments();
 
