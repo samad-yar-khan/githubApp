@@ -11,10 +11,15 @@ import {
     IRead,
 } from "@rocket.chat/apps-engine/definition/accessors";
 
+import { GithubAppApp } from "../GithubAppApp";
 import { IMessage } from "@rocket.chat/apps-engine/definition/messages";
 import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
 import { IUser } from "@rocket.chat/apps-engine/definition/users";
 import { initiatorMessage } from "../lib/initiatorMessage";
+import { AppPersistence } from "../lib/persistence";
+import { GithubSDK } from "../lib/githubsdk";
+import { sendNotification } from "../lib/helpers/sendNotification";
+import { getWebhookUrl } from "../lib/helpers/getWebhookUrl";
 
 export class GithubCommand implements ISlashCommand {
     public command = "github";
@@ -54,10 +59,25 @@ export class GithubCommand implements ISlashCommand {
         if (Array.isArray(command) && command.length === 1) {
             await initiatorMessage({ data, read, persistence, modify, http });
         } else if (Array.isArray(command) && command.length === 2) {
-            const repository = command[0];
-            const resource = command[1];
-            switch (resource) {
+            const subcommand = command[0];
+            const subcommand2 = command[1];
+
+            switch (subcommand) {
+
+                case "set-token" :{
+                    await this.setAccessToken(context, read, modify, http, persistence);
+                    break;
+                }
+                case "subscribe":{
+                    await this.subscribeRepo(context, read, modify, http, persistence);
+                    break;
+                }
+                default:break
+            }
+
+            switch (subcommand2) {
                 case "issues": {
+                    const repository = command[0];
                     const gitResponse = await http.get(
                         `https://api.github.com/repos/${repository}/issues`
                     );
@@ -94,6 +114,7 @@ export class GithubCommand implements ISlashCommand {
                     break;
                 }
                 case "contributors": {
+                    const repository = command[0];
                     const gitResponse = await http.get(
                         `https://api.github.com/repos/${repository}/contributors`
                     );
@@ -129,6 +150,7 @@ export class GithubCommand implements ISlashCommand {
                     break;
                 }
                 case "pulls": {
+                    const repository = command[0];
                     const gitResponse = await http.get(
                         `https://api.github.com/repos/${repository}/contributors`
                     );
@@ -166,6 +188,7 @@ export class GithubCommand implements ISlashCommand {
                     break;
                 }
                 case "repo": {
+                    const repository = command[0];
                     const gitResponse = await http.get(
                         `https://api.github.com/repos/${repository}`
                     );
@@ -215,9 +238,85 @@ export class GithubCommand implements ISlashCommand {
                     await modify.getCreator().finish(textSender);
                     break;
                 }
-                default: // [7]
+                default: 
                     throw new Error("Error!");
             }
         }
+
+        
+    }
+    private async setAccessToken(context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<void> {
+        const accessToken = context.getArguments()[1];
+
+        if (!accessToken) {
+            const room: IRoom = context.getRoom();
+            const textSender = await modify
+                .getCreator()
+                .startMessage()
+                .setText("*Usage: `/github set-token ACCESS_TOKEN`*");
+
+            if (room) {
+                textSender.setRoom(room);
+            }
+            await modify.getCreator().finish(textSender);
+            return;
+        }
+
+        const persistence = new AppPersistence(persis, read.getPersistenceReader());
+
+        await persistence.setUserAccessToken(accessToken, context.getSender());
+
+        const room: IRoom = context.getRoom();
+            const textSender = await modify
+                .getCreator()
+                .startMessage()
+                .setText("*Access Token Set Successfully*");
+
+            if (room) {
+                textSender.setRoom(room);
+            }
+            await modify.getCreator().finish(textSender);
+    }
+    public constructor(private readonly app: GithubAppApp) {}
+    private async subscribeRepo(context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<void> {
+        const [, repoName] = context.getArguments();
+
+        if (!repoName) {
+            await sendNotification('Usage: `/github connect REPO_URL`', read, modify, context.getSender(), context.getRoom());
+            return;
+        }
+
+        if (!repoName) {
+            await sendNotification('Invalid GitHub repo address', read, modify, context.getSender(), context.getRoom());
+            return;
+        }
+
+        const persistence = new AppPersistence(persis, read.getPersistenceReader());
+        const accessToken = await persistence.getUserAccessToken(context.getSender());
+
+        if (!accessToken) {
+            await sendNotification(
+                'You haven\'t configured your access key yet. Please run `/github set-token YOUR_ACCESS_TOKEN`',
+                read,
+                modify,
+                context.getSender(),
+                context.getRoom(),
+            );
+            return;
+        }
+
+        const sdk = new GithubSDK(http, accessToken);
+
+        try {
+            await sdk.createWebhook(repoName, await getWebhookUrl(this.app));
+        } catch (err) {
+            console.error(err);
+            await sendNotification('Error connecting to the repo', read, modify, context.getSender(), context.getRoom());
+            return;
+        }
+
+        await persistence.connectRepoToRoom(repoName, context.getRoom());
+
+        await sendNotification('Successfully connected repo', read, modify, context.getSender(), context.getRoom());
     }
 }

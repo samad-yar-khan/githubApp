@@ -215,7 +215,7 @@ export class GithubAppApp extends App {
             endpoints: [new WebhookEndpoint(this)],
         });
 
-        const gitHubCommand: GithubCommand = new GithubCommand();
+        const gitHubCommand: GithubCommand = new GithubCommand(this);
         await configuration.slashCommands.provideSlashCommand(gitHubCommand);
     }
 }
