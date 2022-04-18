@@ -1,0 +1,50 @@
+export enum ModalsEnum {
+    TODO_VIEW = 'todo-view',
+    ADD_TASK_VIEW = 'add-task-view',
+    ADD_TASK_ACTION = 'add-task',
+    ADD_TASK_LABEL = 'Add task',
+    TASK_INPUT_LABEL = 'Task',
+    TASK_INPUT = 'task',
+    TASK_BLOCK = 'task-block',
+    COMPLETED_TASKS_ACTION = 'completed-tasks',
+    COMPLETED_TASKS_LABEL = 'Completed tasks',
+    TASK_ACTIONS = 'task-actions',
+    TASK_INFO_LABEL = 'Task info',
+    TASK_MARK_COMPLETE_LABEL = 'Done',
+    TASK_INFO_ACTION = 'task-info',
+    TASK_COMPLETE_ACTION = 'complete-task',
+    TASK_UNDO_ACTION = 'undo',
+    TASK_UNDO_LABEL = 'Undo',
+    COMPLETED_TASKS_TITLE = 'Completed Tasks',
+    TASK_INFO_TITLE = 'Task Info',
+    ADD_TASK_TITLE = 'Add Task',
+    COMPLETED_TASKS_VIEW = 'completed-tasks-view',
+    TASK_INFO_VIEW = 'task-info-view',
+    REFRESH_ACTION = 'refresh',
+    REFRESH_LABEL = 'Refresh',
+    
+    // TOKEN MODAL ENUMS
+    ADD_TOKEN_VIEW = 'add-token-view',
+    ADD_TOKEN_ACTION = 'add-token',
+    ADD_TOKEN_LABEL = 'Add Token',
+    ADD_TOKEN_TITLE = 'Add Token',
+    TOKEN_INPUT_LABEL = 'Token',
+    TOKEN_INPUT = 'token',
+    TOKEN_BLOCK = 'token-block',
+
+    // DELETE stuff
+    DELETE_TASKS_TITLE = "Delete Tasks",
+    DELETE_TASKS_VIEW = "delete-tasks-view",
+    TASK_DELETE_ACTION = "delete",
+    TASK_DELETE_LABEL = "Delete",
+    DELETE_TASKS_ACTION = "delete-tasks",
+    DELETE_TASKS_LABEL = "Delete tasks",
+
+    // EDIT stuff
+    EDIT_TASKS_TITLE = "Edit Tasks",
+    EDIT_TASKS_VIEW = "edit-tasks-view",
+    TASK_EDIT_ACTION = "edit",
+    TASK_EDIT_LABEL = "Edit",
+    EDIT_TASKS_ACTION = "edit-tasks",
+    EDIT_TASKS_LABEL = "Edit tasks"
+}

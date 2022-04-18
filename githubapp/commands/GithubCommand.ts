@@ -20,6 +20,8 @@ import { AppPersistence } from "../lib/persistence";
 import { GithubSDK } from "../lib/githubsdk";
 import { sendNotification } from "../lib/helpers/sendNotification";
 import { getWebhookUrl } from "../lib/helpers/getWebhookUrl";
+import { toDoModal } from "../modals/toDoModal";
+import { addTokenModal } from "../modals/AddTokenModal";
 
 export class GithubCommand implements ISlashCommand {
     public constructor(private readonly app: GithubAppApp) {}
@@ -58,7 +60,24 @@ export class GithubCommand implements ISlashCommand {
         };
 
         if (Array.isArray(command) && command.length === 1) {
-            await initiatorMessage({ data, read, persistence, modify, http });
+
+            switch(command[0]){
+                case "set-token" :{
+                    const triggerId = context.getTriggerId();
+                    if (triggerId) {
+                        try {
+                            const modal = await addTokenModal({  modify });
+                            await modify.getUiController().openModalView(modal, { triggerId }, context.getSender());
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    }
+                    break;
+                }
+            default:{
+                await initiatorMessage({ data, read, persistence, modify, http });
+            }
+        }
         } else if (Array.isArray(command) && command.length === 2) {
             const subcommand = command[0];
             const subcommand2 = command[1];

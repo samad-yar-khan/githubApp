@@ -40,3 +40,25 @@ export class AppPersistence {
         return result ? (result as any).accessToken : undefined;
     }
 }
+
+export const persistUIData = async (persistence: IPersistence, id: string, data: any): Promise<void> => {
+    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.USER, `${ id }#UI`);
+    await persistence.updateByAssociation(association, data, true);
+};
+
+export const getUIData = async (persistenceRead: IPersistenceRead, id: string): Promise<any> => {
+    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.USER, `${ id }#UI`);
+    const result = await persistenceRead.readByAssociation(association) as Array<any>;
+    return result && result.length ? result[0] : null;
+};
+
+export const persistRoomTasks = async (persistence: IPersistence, id: string, data: any): Promise<void> => {
+    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.ROOM, `${ id }#TASKS`);
+    await persistence.updateByAssociation(association, data, true);
+};
+
+export const getRoomTasks = async (persistenceRead: IPersistenceRead, id: string): Promise<any> => {
+    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.ROOM, `${ id }#TASKS`);
+    const result = await persistenceRead.readByAssociation(association) as Array<any>;
+    return result && result.length ? result[0] : [];
+};

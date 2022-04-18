@@ -12,6 +12,7 @@ import { IAppInfo } from "@rocket.chat/apps-engine/definition/metadata";
 import { GithubCommand } from "./commands/GithubCommand";
 import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
 import { WebhookEndpoint } from "./endpoints/WebhookEndpoints";
+import { IUIKitInteractionHandler,   UIKitViewCloseInteractionContext, UIKitViewSubmitInteractionContext } from '@rocket.chat/apps-engine/definition/uikit'
 
 import {
     IMessage,
@@ -24,6 +25,9 @@ import {
     UIKitLivechatBlockInteractionContext,
     UIKitBlockInteractionContext,
 } from "@rocket.chat/apps-engine/definition/uikit";
+import { ExecuteBlockActionHandler } from './handlers/ExecuteBlockActionHandler';
+import { ExecuteViewClosedHandler } from './handlers/ExecuteViewClosedHandler';
+import { ExecuteViewSubmitHandler } from './handlers/ExecuteViewSubmitHandler';
 
 import { ContributorImage } from "./lib/ContributorImage";
 
@@ -42,6 +46,8 @@ export class GithubAppApp extends App {
         persistence: IPersistence,
         modify: IModify
     ) {
+
+        
         const data = context.getInteractionData();
 
         const { actionId } = data;
@@ -200,6 +206,9 @@ export class GithubAppApp extends App {
             }
         }
 
+        const handler = new ExecuteBlockActionHandler(this, read, http, modify, persistence);
+        return await handler.run(context);
+
         return {
             success: false,
         };
@@ -217,5 +226,22 @@ export class GithubAppApp extends App {
 
         const gitHubCommand: GithubCommand = new GithubCommand(this);
         await configuration.slashCommands.provideSlashCommand(gitHubCommand);
+    }
+
+     /* UIKit Interaction Handlers */
+    // UIKit action handler
+    // Runs when the user clicks a uikit action button (not close/submit buttons), or changes something on an action block within a modal view
+ 
+
+    // UIKit Modal Submit
+    public async executeViewSubmitHandler(context: UIKitViewSubmitInteractionContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify) {
+        const handler = new ExecuteViewSubmitHandler(this, read, http, modify, persistence);
+        return await handler.run(context);
+	}
+
+    // UIKit Modal Close
+    public async executeViewClosedHandler(context: UIKitViewCloseInteractionContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify) {
+        const handler = new ExecuteViewClosedHandler(this, read, http, modify, persistence);
+        return await handler.run(context);
     }
 }
